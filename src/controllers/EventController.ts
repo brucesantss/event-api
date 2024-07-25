@@ -9,7 +9,7 @@ const prisma = new PrismaClient();
 export const createEvent = async (req: Request, res: Response) => {
     const { name, details, maximumAttendees, location, date } = req.body;
 
-    if(!name || !details || !maximumAttendees){
+    if(!name || !details || !maximumAttendees || !date || !location){
         return res.status(400).json({ message: 'todos os campos são obrigatório' });
     }
 
@@ -21,9 +21,9 @@ export const createEvent = async (req: Request, res: Response) => {
                 name,
                 details,
                 slug,
+                maximumAttendees,
                 location,
-                date: new Date(date),
-                maximumAttendees
+                date: new Date(date)
             }
         })
 

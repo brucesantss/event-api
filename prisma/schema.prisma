@@ -13,14 +13,31 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id        String     @id @default(uuid())
+  name      String
+  pass      String
+  email     String     @unique
+  favorites Favorite[]
+}
+
 model Event {
-  id               String   @id @default(uuid())
+  id               String     @id @default(uuid())
   name             String
   details          String
-  slug             String   @unique
-  location         String   @default("sem informações")
-  date             DateTime @default(now())
-  maximumAttendees Int      @map("maximum_attendees")
+  slug             String     @unique
+  maximumAttendees Int        @map("maximum_attendees")
+  location         String
+  date             DateTime
+  Favorite         Favorite[]
 
   @@map("events")
+}
+
+model Favorite {
+  id      Int    @id @default(autoincrement())
+  userId  String
+  eventId String
+  user    User   @relation(fields: [userId], references: [id])
+  event   Event  @relation(fields: [eventId], references: [id])
 }
