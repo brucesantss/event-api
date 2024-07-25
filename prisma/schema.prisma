@@ -14,11 +14,13 @@ datasource db {
 }
 
 model Event {
-  id               String @id @default(uuid())
+  id               String   @id @default(uuid())
   name             String
   details          String
-  slug             String @unique
-  maximumAttendees Int    @map("maximum_attendees")
+  slug             String   @unique
+  location         String   @default("sem informações")
+  date             DateTime @default(now())
+  maximumAttendees Int      @map("maximum_attendees")
 
   @@map("events")
 }

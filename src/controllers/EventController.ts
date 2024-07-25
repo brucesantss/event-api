@@ -5,8 +5,9 @@ import slugify from "slugify";
 
 const prisma = new PrismaClient();
 
+//criar novo evento
 export const createEvent = async (req: Request, res: Response) => {
-    const { name, details, maximumAttendees } = req.body;
+    const { name, details, maximumAttendees, location, date } = req.body;
 
     if(!name || !details || !maximumAttendees){
         return res.status(400).json({ message: 'todos os campos são obrigatório' });
@@ -20,6 +21,8 @@ export const createEvent = async (req: Request, res: Response) => {
                 name,
                 details,
                 slug,
+                location,
+                date: new Date(date),
                 maximumAttendees
             }
         })
@@ -33,18 +36,22 @@ export const createEvent = async (req: Request, res: Response) => {
         return res.status(500).json({ message: 'houve um erro :(', err })  
     }
 }
-
+//buscar todos os eventos
 export const getEvents = async (req: Request, res: Response) => {
 
     try{
         const events = await prisma.event.findMany();
+
+        if(events.length <= 0){
+            return res.status(400).json({ message: 'nenhum evento.' }); 
+        }
 
         return res.status(400).json({ message: events }); 
     }catch(err){
         console.log(err);
     }
 }
-
+//buscar evento pelo slug
 export const getEventBySlug = async  (req: Request, res: Response) => {
     const { slug } = req.params;
 
@@ -65,3 +72,42 @@ export const getEventBySlug = async  (req: Request, res: Response) => {
         return res.status(500).json({ message: 'erro no servidor.' })
     }
 }
+//atualizar evento
+export const updateEvent = async  (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { name, details, maximumAttendees } = req.body;
+
+    try{
+        const eventUpdate = await prisma.event.update({
+            where: {
+                id
+            },
+            data: {
+                name,
+                details,
+                maximumAttendees
+            }
+        })
+
+        return res.status(200).json({ message: 'evento atualizado.', eventUpdate })
+    }catch(err){
+        console.log(err);
+        return res.status(500).json({ message: 'erro no servidor.' })
+    }
+}
+//deletar evento
+export const deleteEvent = async  (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    try{
+        const eventDelete = await prisma.event.delete({
+            where: {id}
+        })
+
+        return res.status(200).json({ message: 'evento deletado.', eventDelete })
+    }catch(err){
+        console.log(err);
+        return res.status(500).json({ message: 'erro no servidor.' })
+    }
+}
+
