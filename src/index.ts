@@ -1,6 +1,8 @@
 import express from 'express';
 
-import UserRouter from './router/EventRouter';
+import EventRouter from './router/EventRouter';
+import UserRouter from './router/UserRouter';
+import FavoriteRoute from './router/FavoriteRoute';
 
 const app = express();
 const port = 8080;
@@ -9,7 +11,9 @@ const port = 8080;
 app.use(express.json());
 
 //rotas
-app.use('/', UserRouter);
+app.use('/', EventRouter);
+app.use('/', UserRouter)
+app.use('/', FavoriteRoute)
 
 //subindo servidor
 app.listen(port, () => {
