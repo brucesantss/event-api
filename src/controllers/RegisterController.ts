@@ -9,13 +9,13 @@ export const createUser = async (req: Request, res: Response) => {
 
     try {
 
+        if(!name || !email || !pass){
+            return res.status(400).json({ message: 'todos os campos são obrigatários.' })
+        }
+
         const existUser = await prisma.user.findUnique({ where: {email} })
         if(existUser){
             return res.status(400).json({ message: 'esse email já está sendo usado.' })
-        }
-
-        if(!name || !email || !pass){
-            return res.status(400).json({ message: 'todos os campos são obrigatários.' })
         }
 
         const user = await prisma.user.create({
@@ -43,9 +43,5 @@ export const getUsers = async (req: Request, res: Response) => {
         console.log(error);
         return res.status(500).json({ message: 'erro no servidor.' })
     }
-}
-
-export const deleteUser = async (req: Request, res: Response) => {
-    
 }
 

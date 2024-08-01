@@ -46,7 +46,7 @@ export const getEvents = async (req: Request, res: Response) => {
             return res.status(400).json({ message: 'nenhum evento.' }); 
         }
 
-        return res.status(400).json({ message: events }); 
+        return res.status(200).json({ message: events }); 
     }catch(err){
         console.log(err);
     }
@@ -100,14 +100,24 @@ export const deleteEvent = async  (req: Request, res: Response) => {
     const { id } = req.params;
 
     try{
+
+        // deletar registros relacionados na tabela Favorite
+        await prisma.favorite.deleteMany({
+            where: { eventId: id }
+        });
+
         const eventDelete = await prisma.event.delete({
-            where: {id}
+            where: {id: id}
         })
+
+        if(!eventDelete){
+            return res.status(404).json({ message: 'evento não encontrado.' })
+        }
 
         return res.status(200).json({ message: 'evento deletado.', eventDelete })
     }catch(err){
         console.log(err);
-        return res.status(500).json({ message: 'erro no servidor.' })
+        return res.status(500).json({ message: 'erro no servidor.', err })
     }
 }
 
